@@ -30,18 +30,19 @@ bool Player::init()
 
 void Player::update(float dt)
 {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && m_position.y > 790)
     {
         m_isJumping = true;
     }
 
-    if (m_position.y < 600)
+    if (m_position.y < 650)
         m_isJumping = false;
 
     if (m_isJumping)
         m_position.y -= 200 * dt;
     else if (!m_isJumping && m_position.y < 800)
         m_position.y += 200 * dt;
+    std::cout << "Player Y Pos: " << m_position.y << std::endl;
 }
 
 void Player::render(sf::RenderTarget& target) const

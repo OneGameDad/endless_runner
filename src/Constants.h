@@ -10,3 +10,5 @@ enum e_entity_state
 
 const float defaultEnemySpeed = 200.0f;
 const float defaultEnemyLifetime = 10.0f;
+
+const float groundYPos = 800.0f;
