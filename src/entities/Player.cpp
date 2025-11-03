@@ -42,7 +42,6 @@ void Player::update(float dt)
         m_position.y -= 200 * dt;
     else if (!m_isJumping && m_position.y < 800)
         m_position.y += 200 * dt;
-    std::cout << "Player Y Pos: " << m_position.y << std::endl;
 }
 
 void Player::render(sf::RenderTarget& target) const
