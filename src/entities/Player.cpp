@@ -10,6 +10,7 @@ Player::Player()
 
 bool Player::init()
 {
+    reset();
     const sf::Texture* pTexture = ResourceManager::getOrLoadTexture("player.png");
     if (pTexture == nullptr)
         return false;
@@ -49,4 +50,68 @@ void Player::render(sf::RenderTarget& target) const
     m_pSprite->setRotation(m_rotation);
     m_pSprite->setPosition(m_position);
     target.draw(*m_pSprite);
+}
+
+void Player::reset()
+{
+    currentEnergy = 0.0f;
+    currentHealth = maxHealth;
+}
+
+void Player::setIsDead()
+{
+    if (isDead)
+        isDead = false;
+}
+
+void    Player::takeDamage(float num)
+{
+    if (num < 0.0f)
+        return;
+    currentHealth -= num;
+    if (currentHealth <= 0.0f)
+        setIsDead();
+}
+
+void    Player::heal(float num)
+{
+    if (num < 0.0f)
+        return;
+    if ((currentHealth + num) < maxHealth)
+        currentHealth += num;
+    else
+        currentHealth = maxHealth;
+}
+
+void    Player::energize(float num)
+{
+    if (num < 0.0f)
+        return;
+    if ((currentEnergy + num) < maxEnergy)
+        currentEnergy += num;    
+    else
+        currentEnergy = maxEnergy;
+    std::cout << "Current Energy: " << getCurrentEnergy() << std::endl;
+}
+
+void    Player::drain(float num)
+{
+    if (num < 0.0f)
+        return;
+    if ((currentEnergy - num) >= 0.0f)
+        currentEnergy = 0.0f;
+    else
+        currentEnergy -= num;
+}
+
+float   Player::getNormalizedEnergy() const
+{
+    float normalized = currentEnergy / maxEnergy;
+    return (normalized);
+}
+
+float   Player::getNormalizedHealth() const
+{
+    float normalized = currentHealth / maxHealth;
+    return (normalized);
 }

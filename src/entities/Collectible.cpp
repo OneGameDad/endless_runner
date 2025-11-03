@@ -6,7 +6,7 @@
 
 bool Collectible::init()
 {
-    const sf::Texture* pTexture = ResourceManager::getOrLoadTexture("laser_blue.png");
+    const sf::Texture* pTexture = ResourceManager::getOrLoadTexture("GlowDot.png");
     if (pTexture == nullptr)
         return false;
 
@@ -18,6 +18,7 @@ bool Collectible::init()
     m_pSprite->setOrigin({localBounds.size.x / 2.0f, localBounds.size.y / 2.0f});
     m_pSprite->setPosition(m_position);
     m_pSprite->setScale(sf::Vector2f(2.5f, 2.5f));
+    m_pSprite->setColor(sf::Color::Yellow);
     m_collisionRadius = collisionRadius;
     
     currentState = INACTIVE;
@@ -74,6 +75,7 @@ void Collectible::activate(sf::Vector2f a_position, float a_lifetime, float a_sp
 void Collectible::deactivate()
 {
     currentState = INACTIVE;
+    setPosition({0.0f, 0.0f});
 }
 
 void Collectible::reset()

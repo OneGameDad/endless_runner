@@ -7,7 +7,7 @@
 
 namespace sf { class RenderTarget; };
 
-class Entity
+class Entity: public sf::Transformable
 {
 public:
     Entity() = default;
@@ -29,6 +29,7 @@ public:
     void setHealth(int health) { m_health = health; }
 
     e_entity_state getCurrentState() const { return (currentState); }
+    sf::Sprite& getSprite() { return (*m_pSprite);  }
 
 protected:
     sf::Vector2f m_position;

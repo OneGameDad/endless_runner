@@ -21,7 +21,6 @@ bool EnemyManager::initialise()
     {
         enem->init();
     }
-    std::cout << "Enemy Manager & Enemies Initialized\n";
     return true;
 }
 

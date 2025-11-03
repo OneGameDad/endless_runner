@@ -11,6 +11,8 @@
 #include "entities/EnemyManager.h"
 #include <iostream>
 #include "entities/CollectiblesManager.h"
+#include "HUD/EnergyBar.h"
+#include "HUD/PlayerHealthBar.h"
 
 class StatePlaying : public IState
 {
@@ -21,6 +23,7 @@ public:
     bool init() override;
     void update(float dt) override;
     void render(sf::RenderTarget& target) const override;
+    std::unique_ptr<Player>& getPlayer() { return (m_pPlayer); }
 
 private:
     static constexpr const float enemySpawnInterval = 2.0f;
@@ -30,17 +33,23 @@ private:
 
     StateStack& m_stateStack;
     std::unique_ptr<Player> m_pPlayer;
-//  std::vector<std::unique_ptr<Enemy>> m_enemies;
     sf::RectangleShape m_ground;
     bool m_hasPauseKeyBeenReleased = true;
 
     
     void updateEnemySpawns(float dt);
-    bool updateEnemyCollisions();
+    void updateEnemyCollisions();
 
     void updateCollectibleSpawns(float dt);
     void updateCollectibleCollisions();
 
     std::unique_ptr<EnemyManager> enemManager;
     std::unique_ptr<CollectiblesManager> collManager;
+
+    bool initText();
+    void updateText();
+    std::unique_ptr<sf::Text> playerHealthNotification;
+    const std::string healthStr = "Player Health: ";
+    std::unique_ptr<sf::Text> playerEnergyNotification;
+    const std::string energyStr = "Player Energy: ";
 };

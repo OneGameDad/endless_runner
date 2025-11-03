@@ -10,8 +10,7 @@ StatePlaying::StatePlaying(StateStack& stateStack)
     : m_stateStack(stateStack),
     enemManager(std::make_unique<EnemyManager>(this)),
     collManager(std::make_unique<CollectiblesManager>(this))
-{
-}
+{}
 
 bool StatePlaying::init()
 {
@@ -26,6 +25,9 @@ bool StatePlaying::init()
     m_pPlayer->setPosition(sf::Vector2f(200, groundYPos));
     enemManager->initialise();
     collManager->initialise();
+    
+    initText();
+
     return true;
 }
 
@@ -44,34 +46,28 @@ void StatePlaying::update(float dt)
 
     m_pPlayer->update(dt);
 
-/*    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
-    {
-        pEnemy->update(dt);
-    }
-*/
-
     enemManager->update(dt);
     collManager->update(dt);
 
     // Detect collisions
-    bool playerDied = false;
-    playerDied = updateEnemyCollisions();
-    updateCollectibleCollisions();
-    
+    updateEnemyCollisions();
 
     // End Playing State on player death
-    if (playerDied)
+    if (m_pPlayer->getIsDead() == false)
         m_stateStack.popDeferred();
+
+    updateCollectibleCollisions();
+    updateText();
 }
 
 void StatePlaying::render(sf::RenderTarget& target) const
 {
     target.draw(m_ground);
-//    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
-//        pEnemy->render(target);
     enemManager->render(target);
     collManager->render(target);
     m_pPlayer->render(target);
+    target.draw(*playerHealthNotification);
+    target.draw(*playerEnergyNotification);
 }
 
 void StatePlaying::updateCollectibleSpawns(float dt)
@@ -96,20 +92,20 @@ void StatePlaying::updateEnemySpawns(float dt)
     }
 }
 
-bool StatePlaying::updateEnemyCollisions()
+void StatePlaying::updateEnemyCollisions()
 {
     for (auto& pEnemy : enemManager->getPool())
     {
         float distance = (m_pPlayer->getPosition() - pEnemy->getPosition()).lengthSquared();
         float minDistance = std::pow(Player::collisionRadius + pEnemy->getCollisionRadius(), 2.0f);
-        const sf::Vector2f playerPosition = m_pPlayer->getPosition();
+        //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
 
         if (distance <= minDistance)
         {
-            return (true);
+            m_pPlayer->setIsDead();
+            return;
         }
     }
-    return (false);
 }
 
 void StatePlaying::updateCollectibleCollisions()
@@ -118,11 +114,58 @@ void StatePlaying::updateCollectibleCollisions()
     {
         float distance = (m_pPlayer->getPosition() - pColl->getPosition()).lengthSquared();
         float minDistance = std::pow(Player::collisionRadius + pColl->getCollisionRadius(), 2.0f);
-        const sf::Vector2f playerPosition = m_pPlayer->getPosition();
+        //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
 
         if (distance <= minDistance)
         {
             pColl->deactivate();
+            m_pPlayer->energize(1.0f);
+            return;
         }
     }
+}
+
+bool StatePlaying::initText()
+{
+    const sf::Font* pFont = ResourceManager::getOrLoadFont("Lavigne.ttf");
+    if (pFont == nullptr)
+        return false;
+
+    playerHealthNotification = std::make_unique<sf::Text>(*pFont);
+    if (!playerHealthNotification)
+        return false;
+    std::string tempStr1 = healthStr + std::to_string((int)m_pPlayer->getCurrentHealth());
+    playerHealthNotification->setString(tempStr1);
+    playerHealthNotification->setStyle(sf::Text::Bold);
+    playerHealthNotification->setCharacterSize(24);
+    sf::FloatRect HPlocalBounds = playerHealthNotification->getLocalBounds();
+    playerHealthNotification->setOrigin({HPlocalBounds.size.x / 2.0f, HPlocalBounds.size.y / 2.0f});
+    playerHealthNotification->setPosition({150.0f, 30.0f});
+
+    playerEnergyNotification = std::make_unique<sf::Text>(*pFont);
+    if (!playerEnergyNotification)
+        return false;
+    std::string tempStr2 = energyStr + std::to_string((int)m_pPlayer->getCurrentEnergy());
+    playerEnergyNotification->setString(tempStr2);
+    playerEnergyNotification->setStyle(sf::Text::Bold);
+    playerEnergyNotification->setCharacterSize(24);
+    sf::FloatRect NRGlocalBounds = playerEnergyNotification->getLocalBounds();
+    playerEnergyNotification->setOrigin({NRGlocalBounds.size.x / 2.0f, NRGlocalBounds.size.y / 2.0f});
+    playerEnergyNotification->setPosition({150.0f, 60.0f});
+
+    return true;
+}
+
+void StatePlaying::updateText()
+{
+    std::string tempStr1 = healthStr + std::to_string((int)m_pPlayer->getCurrentHealth());
+    playerHealthNotification->setString(tempStr1);
+//    sf::FloatRect HPlocalBounds = playerHealthNotification->getLocalBounds();
+//    playerHealthNotification->setOrigin({HPlocalBounds.size.x / 2.0f, HPlocalBounds.size.y / 2.0f});
+
+    std::string tempStr2 = energyStr + std::to_string((int)m_pPlayer->getCurrentEnergy());
+    playerEnergyNotification->setString(tempStr2);
+
+//    sf::FloatRect NRGlocalBounds = playerEnergyNotification->getLocalBounds();
+//    playerEnergyNotification->setOrigin({NRGlocalBounds.size.x / 2.0f, NRGlocalBounds.size.y / 2.0f});
 }

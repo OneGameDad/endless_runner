@@ -21,7 +21,6 @@ bool CollectiblesManager::initialise()
     {
         item->init();
     }
-    std::cout << "item Manager & Enemies Initialized\n";
     return true;
 }
 
@@ -45,7 +44,6 @@ void CollectiblesManager::spawn(sf::Vector2f a_position, float a_lifetime, float
    if (pool[item]->getCurrentState() != INACTIVE)
         pool[item]->deactivate();
     pool[item]->activate(a_position, a_lifetime, a_speed);
-    std::cout << "Collectible Spawned\n";
 }
 
 size_t CollectiblesManager::getUseableItem()
