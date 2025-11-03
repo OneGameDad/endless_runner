@@ -7,7 +7,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 StatePlaying::StatePlaying(StateStack& stateStack)
-    : m_stateStack(stateStack)
+    : m_stateStack(stateStack),
+    enemManager(std::make_unique<EnemyManager>(this))
 {
 }
 
@@ -22,7 +23,7 @@ bool StatePlaying::init()
         return false;
 
     m_pPlayer->setPosition(sf::Vector2f(200, 800));
-
+    enemManager->initialise();
     return true;
 }
 
@@ -33,10 +34,13 @@ void StatePlaying::update(float dt)
     if (m_timeUntilEnemySpawn < 0.0f)
     {
         m_timeUntilEnemySpawn = enemySpawnInterval;
-        std::unique_ptr<Enemy> pEnemy = std::make_unique<Enemy>();
+/*        std::unique_ptr<Enemy> pEnemy = std::make_unique<Enemy>();
         pEnemy->setPosition(sf::Vector2f(1000, 800));
         if (pEnemy->init())
             m_enemies.push_back(std::move(pEnemy));
+*/
+        enemManager->spawn(sf::Vector2f{1000, 800}, 10.0f, defaultEnemySpeed, defaultEnemyLifetime);
+        std::cout << "Spawn called\n";
     }
 
     bool isPauseKeyPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape);
@@ -49,14 +53,17 @@ void StatePlaying::update(float dt)
 
     m_pPlayer->update(dt);
 
-    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
+/*    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
     {
         pEnemy->update(dt);
     }
+*/
+
+    enemManager->update(dt);
 
     // Detect collisions
     bool playerDied = false;
-    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
+    for (auto& pEnemy : enemManager->getPool())
     {
         float distance = (m_pPlayer->getPosition() - pEnemy->getPosition()).lengthSquared();
         float minDistance = std::pow(Player::collisionRadius + pEnemy->getCollisionRadius(), 2.0f);
@@ -77,7 +84,8 @@ void StatePlaying::update(float dt)
 void StatePlaying::render(sf::RenderTarget& target) const
 {
     target.draw(m_ground);
-    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
-        pEnemy->render(target);
+//    for (const std::unique_ptr<Enemy>& pEnemy : m_enemies)
+//        pEnemy->render(target);
+    enemManager->render(target);
     m_pPlayer->render(target);
 }

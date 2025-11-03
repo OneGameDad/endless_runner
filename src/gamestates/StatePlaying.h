@@ -7,6 +7,9 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <cmath>
+#include "entities/EnemyManager.h"
+#include <iostream>
 
 class StatePlaying : public IState
 {
@@ -24,9 +27,11 @@ private:
 
     StateStack& m_stateStack;
     std::unique_ptr<Player> m_pPlayer;
-    std::vector<std::unique_ptr<Enemy>> m_enemies;
+//  std::vector<std::unique_ptr<Enemy>> m_enemies;
     sf::RectangleShape m_ground;
     bool m_hasPauseKeyBeenReleased = true;
 
     void updateCollisions();
+
+    std::unique_ptr<EnemyManager> enemManager;
 };

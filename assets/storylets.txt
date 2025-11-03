@@ -1,0 +1,3 @@
+ID_TEST\tThis is just a test string.
+ID_WAIT\tBe patient. You are waiting for the game to begin. Just a little while long and it will all work out.
+ID_PLAY\tYou're playing! Watch out for the zombies or vampires. Whatever they are. They're undead and it's your job to use your weapon and deaden them. Good Luck!

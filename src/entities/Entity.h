@@ -3,6 +3,7 @@
 #include <memory>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include "Constants.h"
 
 namespace sf { class RenderTarget; };
 
@@ -22,10 +23,12 @@ public:
     const sf::Angle& getRotation() const { return m_rotation; }
     void setRotation(const sf::Angle& rotation) { m_rotation = rotation; };
 
-    const float getCollisionRadius() { return m_collisionRadius; }
+    float getCollisionRadius() const  { return m_collisionRadius; }
 
-    const int getHealth() const { return m_health; }
+    int getHealth() const { return m_health; }
     void setHealth(int health) { m_health = health; }
+
+    e_entity_state getCurrentState() const { return (currentState); }
 
 protected:
     sf::Vector2f m_position;
@@ -34,4 +37,6 @@ protected:
     float m_collisionRadius = 0.0f;
     std::unique_ptr<sf::Sprite> m_pSprite;
     int m_health = 0;
+
+    e_entity_state currentState = INACTIVE;
 };

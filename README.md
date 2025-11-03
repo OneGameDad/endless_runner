@@ -65,7 +65,7 @@ Upload your work to Google Drive, Dropbox (or some other service), and complete 
 
 ## Your Game's Instructions
 
-Please include any instructions to your game here.
+This game includes tools I developed in preparation for this challenge. They can be found on my [SFML Experiments Repo](https://github.com/OneGameDad/SFML_Experiments).
 
 ## Troubleshooting
 
