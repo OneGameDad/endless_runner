@@ -11,8 +11,7 @@
 #include "entities/EnemyManager.h"
 #include <iostream>
 #include "entities/CollectiblesManager.h"
-#include "HUD/EnergyBar.h"
-#include "HUD/PlayerHealthBar.h"
+#include "entities/ProjectilesManager.h"
 
 class StatePlaying : public IState
 {
@@ -24,6 +23,7 @@ public:
     void update(float dt) override;
     void render(sf::RenderTarget& target) const override;
     std::unique_ptr<Player>& getPlayer() { return (m_pPlayer); }
+    std::unique_ptr<EnemyManager>& getEnemies() { return (enemManager); }
 
 private:
     static constexpr const float enemySpawnInterval = 2.0f;
@@ -45,6 +45,7 @@ private:
 
     std::unique_ptr<EnemyManager> enemManager;
     std::unique_ptr<CollectiblesManager> collManager;
+    std::unique_ptr<ProjectilesManager> projManager;
 
     bool initText();
     void updateText();

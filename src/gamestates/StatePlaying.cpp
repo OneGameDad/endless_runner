@@ -9,7 +9,8 @@
 StatePlaying::StatePlaying(StateStack& stateStack)
     : m_stateStack(stateStack),
     enemManager(std::make_unique<EnemyManager>(this)),
-    collManager(std::make_unique<CollectiblesManager>(this))
+    collManager(std::make_unique<CollectiblesManager>(this)),
+    projManager(std::make_unique<ProjectilesManager>(this, enemManager.get()))
 {}
 
 bool StatePlaying::init()
@@ -18,14 +19,15 @@ bool StatePlaying::init()
     m_ground.setPosition({0.0f, groundYPos});
     m_ground.setFillColor(sf::Color::Green);
 
-    m_pPlayer = std::make_unique<Player>();
+    m_pPlayer = std::make_unique<Player>(projManager.get());
     if (!m_pPlayer || !m_pPlayer->init())
         return false;
 
     m_pPlayer->setPosition(sf::Vector2f(200, groundYPos));
     enemManager->initialise();
     collManager->initialise();
-    
+    projManager->initialise();
+
     initText();
 
     return true;
@@ -46,8 +48,10 @@ void StatePlaying::update(float dt)
 
     m_pPlayer->update(dt);
 
+    projManager->update(dt);
     enemManager->update(dt);
     collManager->update(dt);
+    
 
     // Detect collisions
     updateEnemyCollisions();
@@ -63,6 +67,7 @@ void StatePlaying::update(float dt)
 void StatePlaying::render(sf::RenderTarget& target) const
 {
     target.draw(m_ground);
+    projManager->render(target);
     enemManager->render(target);
     collManager->render(target);
     m_pPlayer->render(target);
@@ -88,7 +93,7 @@ void StatePlaying::updateEnemySpawns(float dt)
     if (m_timeUntilEnemySpawn < 0.0f)
     {
         m_timeUntilEnemySpawn = enemySpawnInterval;
-        enemManager->spawn(sf::Vector2f{1000, 800}, 10.0f, defaultEnemySpeed, defaultEnemyLifetime);
+        enemManager->spawn(sf::Vector2f{1000, 800}, 10.0f, defaultEnemyLifetime, defaultEnemySpeed);
     }
 }
 
@@ -104,6 +109,23 @@ void StatePlaying::updateEnemyCollisions()
         {
             m_pPlayer->setIsDead();
             return;
+        }
+    }
+
+    for (auto& pProj: projManager->getPool())
+    {
+        for (auto& pEnemy : enemManager->getPool())
+        {
+            float distance = (pProj->getPosition() - pEnemy->getPosition()).lengthSquared();
+            float minDistance = std::pow(pProj->getCollisionRadius() + pEnemy->getCollisionRadius(), 2.0f);
+            //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
+
+            if (distance <= minDistance)
+            {
+                pEnemy->deactivate();
+                pProj->deactivate();
+                return;
+            }
         }
     }
 }

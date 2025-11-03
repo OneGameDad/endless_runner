@@ -40,8 +40,9 @@ void EnemyManager::render(sf::RenderTarget& target) const
 
 void EnemyManager::spawn(sf::Vector2f a_position, float a_lifetime, float a_speed, float a_angle)
 {
-   size_t enemy = getUseableEnemy();
-   if (pool[enemy]->getCurrentState() != INACTIVE)
+    (void) a_angle;
+    size_t enemy = getUseableEnemy();
+    if (pool[enemy]->getCurrentState() != INACTIVE)
         pool[enemy]->deactivate();
     pool[enemy]->activate(a_position, a_lifetime, a_speed);
 }

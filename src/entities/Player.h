@@ -6,6 +6,7 @@
 #include <SFML/System/Angle.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <iostream>
+#include "ProjectilesManager.h"
 
 namespace sf { class Sprite; }
 
@@ -16,17 +17,31 @@ private:
     static constexpr float maxHealth = 100.0f;
     float currentHealth = maxHealth;
 
-    static constexpr float maxEnergy = 10.0f;
-    float currentEnergy = 0.0f;
+    static constexpr float maxEnergy = 50.0f;
+    static constexpr float startingEnergy = 5.0f;
+    float currentEnergy = startingEnergy;
 
     bool isDead = true;
+    bool wasSpacePressed = false;
 
-    void reset();
+    bool canFire = true;
+    float fireRate = defaultPlayerFireRate;
+    sf::Vector2f spawnPoint;
+
+    bool canJump = true;
+    float jumpRate = defaultPlayerJumpRate;
+
+    ProjectilesManager* projManager;
+    void    reset();
+    void    fire();
+    void    recharge(float deltaTime);
+    void    jump();
+    void    drop();
 
 public:
     static constexpr float collisionRadius = 42.0f;
 
-    Player();
+    Player(ProjectilesManager* pProjManager);
     virtual ~Player() = default;
     
     bool init() override;
@@ -48,4 +63,6 @@ public:
     float   getNormalizedHealth() const;
     float   getCurrentEnergy() const { return (currentEnergy); }
     float   getCurrentHealth() const { return (currentHealth); }
+
+    
 };

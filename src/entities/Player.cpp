@@ -4,7 +4,8 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <cmath>
 
-Player::Player()
+Player::Player(ProjectilesManager* pProjManager)
+    : projManager(pProjManager)
 {
 }
 
@@ -31,18 +32,30 @@ bool Player::init()
 
 void Player::update(float dt)
 {
+    recharge(dt);
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && m_position.y > 790)
     {
-        m_isJumping = true;
+        jump();
     }
+
+//    float ySpeed = 0.0f;
 
     if (m_position.y < 650)
         m_isJumping = false;
 
-    if (m_isJumping)
+/**    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && m_position.y < 790)
+        m_position.y += 400 * dt;
+    else*/ if (m_isJumping)
         m_position.y -= 200 * dt;
     else if (!m_isJumping && m_position.y < 800)
         m_position.y += 200 * dt;
+
+
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G))
+    {
+        fire();
+    }
 }
 
 void Player::render(sf::RenderTarget& target) const
@@ -54,8 +67,12 @@ void Player::render(sf::RenderTarget& target) const
 
 void Player::reset()
 {
-    currentEnergy = 0.0f;
+    currentEnergy = startingEnergy;
     currentHealth = maxHealth;
+    fireRate = defaultPlayerFireRate;
+    jumpRate = defaultPlayerJumpRate;
+    canFire = true;
+    canJump = true;
 }
 
 void Player::setIsDead()
@@ -114,4 +131,46 @@ float   Player::getNormalizedHealth() const
 {
     float normalized = currentHealth / maxHealth;
     return (normalized);
+}
+
+void    Player::fire()
+{
+    if (canFire && currentEnergy > 0.0f)
+    {
+        spawnPoint = {getPosition().x + 10, getPosition().y};
+        projManager->spawn(spawnPoint, defaultProjectileLifetime, defaultProjectileSpeed);
+        canFire = false;
+        currentEnergy -= 3.0f;
+    }
+}
+
+void    Player::recharge(float deltaTime)
+{
+    if (!canFire)
+    {
+        fireRate -= deltaTime;
+        if (fireRate <= 0.0f)
+        {
+            canFire = true;
+            fireRate = defaultPlayerFireRate;
+        }
+    }
+    if (!canJump)
+    {
+        jumpRate -= deltaTime;
+        if (jumpRate <= 0.0f)
+        {
+            canJump = true;
+            jumpRate = defaultPlayerJumpRate;
+        }
+    }
+}
+
+void    Player::jump()
+{
+    if (canJump)
+    {
+        canJump = false;
+        m_isJumping = true;
+    }
 }
