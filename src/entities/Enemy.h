@@ -5,6 +5,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/System/Angle.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <random>
 
 namespace sf { class Sprite; }
 
@@ -13,7 +14,9 @@ class Enemy final : public Entity
 private:
     float speed = defaultEnemySpeed;
     float lifetime = defaultEnemyLifetime;
-    
+    e_enemy_kind kind = FIZZ;
+
+    void setKind();
     void setSpeed(float a_speed);
 public:
     static constexpr float collisionRadius = 24.0f;
@@ -31,4 +34,5 @@ public:
 
     float getLifetime() const { return (lifetime); }
     float getSpeed() const { return (speed); }
+    e_enemy_kind getKind() const { return (kind); }
 };

@@ -77,23 +77,39 @@ void StatePlaying::render(sf::RenderTarget& target) const
 
 void StatePlaying::updateCollectibleSpawns(float dt)
 {
-    m_timeUntilCollSpawn -= dt;
+    m_timeUntilCollSpawn1 -= dt;
 
-    if (m_timeUntilCollSpawn < 0.0f)
+    if (m_timeUntilCollSpawn1 < 0.0f)
     {
-        m_timeUntilCollSpawn = collSpawnInterval;
+        m_timeUntilCollSpawn1 = collSpawnInterval1;
         collManager->spawn(sf::Vector2f{1000, 800}, 10.0f, defaultEnemySpeed, defaultEnemyLifetime);
+    }
+
+    m_timeUntilCollSpawn2-= dt;
+
+    if (m_timeUntilCollSpawn2 < 0.0f)
+    {
+        m_timeUntilCollSpawn2 = collSpawnInterval2;
+        collManager->spawn(sf::Vector2f{1000, 650}, 10.0f, defaultEnemySpeed, defaultEnemyLifetime);
     }
 }
 
 void StatePlaying::updateEnemySpawns(float dt)
 {
-    m_timeUntilEnemySpawn -= dt;
+    m_timeUntilEnemySpawn1 -= dt;
 
-    if (m_timeUntilEnemySpawn < 0.0f)
+    if (m_timeUntilEnemySpawn1 < 0.0f)
     {
-        m_timeUntilEnemySpawn = enemySpawnInterval;
+        m_timeUntilEnemySpawn1 = enemySpawnInterval1;
         enemManager->spawn(sf::Vector2f{1000, 800}, 10.0f, defaultEnemyLifetime, defaultEnemySpeed);
+    }
+
+    m_timeUntilEnemySpawn2 -= dt;
+
+    if (m_timeUntilEnemySpawn2 < 0.0f)
+    {
+        m_timeUntilEnemySpawn2 = enemySpawnInterval2;
+        enemManager->spawn(sf::Vector2f{1000, 650}, 10.0f, defaultEnemyLifetime, defaultEnemySpeed);
     }
 }
 
@@ -102,12 +118,21 @@ void StatePlaying::updateEnemyCollisions()
     for (auto& pEnemy : enemManager->getPool())
     {
         float distance = (m_pPlayer->getPosition() - pEnemy->getPosition()).lengthSquared();
-        float minDistance = std::pow(Player::collisionRadius + pEnemy->getCollisionRadius(), 2.0f);
+        float minDistance = std::pow(Player::collisionRadius + pEnemy->getCollisionRadius(), defaultEnemyRadius);
         //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
 
         if (distance <= minDistance)
         {
-            m_pPlayer->setIsDead();
+            if (pEnemy->getKind() == FIZZ)
+            {
+                m_pPlayer->takeDamage(33.34);
+                pEnemy->deactivate();
+            }
+            else
+            {
+                m_pPlayer->drain(4.0f);
+                pEnemy->deactivate();
+            }
             return;
         }
     }
@@ -117,7 +142,7 @@ void StatePlaying::updateEnemyCollisions()
         for (auto& pEnemy : enemManager->getPool())
         {
             float distance = (pProj->getPosition() - pEnemy->getPosition()).lengthSquared();
-            float minDistance = std::pow(pProj->getCollisionRadius() + pEnemy->getCollisionRadius(), 2.0f);
+            float minDistance = std::pow(pProj->getCollisionRadius() + pEnemy->getCollisionRadius(), defaultEnemyRadius);
             //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
 
             if (distance <= minDistance)
@@ -135,7 +160,7 @@ void StatePlaying::updateCollectibleCollisions()
     for (auto& pColl : collManager->getPool())
     {
         float distance = (m_pPlayer->getPosition() - pColl->getPosition()).lengthSquared();
-        float minDistance = std::pow(Player::collisionRadius + pColl->getCollisionRadius(), 2.0f);
+        float minDistance = std::pow(Player::collisionRadius + pColl->getCollisionRadius(), defaultCollectibleRadius);
         //const sf::Vector2f playerPosition = m_pPlayer->getPosition();
 
         if (distance <= minDistance)

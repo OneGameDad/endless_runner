@@ -69,6 +69,7 @@ void Enemy::activate(sf::Vector2f a_position, float a_lifetime, float a_speed)
     setPosition(a_position);
     setSpeed(a_speed);
     lifetime = a_lifetime;
+    setKind();
 }
 
 void Enemy::deactivate()
@@ -88,4 +89,23 @@ void Enemy::setSpeed(float a_speed)
 {
     if (speed < a_speed)
         speed = a_speed;
+}
+
+void Enemy::setKind()
+{
+    static std::random_device rd; 
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(1, 2);
+
+    int random_number = dist(gen);
+    if (random_number == 1)
+    {
+        kind = FIZZ;
+        m_pSprite->setColor(sf::Color::Red);
+    }
+    else
+    {
+        kind = BUZZ;
+        m_pSprite->setColor(sf::Color::Black);
+    }
 }

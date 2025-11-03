@@ -26,10 +26,15 @@ public:
     std::unique_ptr<EnemyManager>& getEnemies() { return (enemManager); }
 
 private:
-    static constexpr const float enemySpawnInterval = 2.0f;
-    static constexpr const float collSpawnInterval = 1.5f;
-    float m_timeUntilEnemySpawn = enemySpawnInterval;
-    float m_timeUntilCollSpawn = collSpawnInterval;
+    static constexpr const float enemySpawnInterval1 = 2.0f;
+    static constexpr const float collSpawnInterval1 = 1.5f;
+    float m_timeUntilEnemySpawn1 = enemySpawnInterval1;
+    float m_timeUntilCollSpawn1 = collSpawnInterval1;
+
+    static constexpr const float enemySpawnInterval2 = 1.75f;
+    static constexpr const float collSpawnInterval2 = 3.6f;
+    float m_timeUntilEnemySpawn2 = enemySpawnInterval2;
+    float m_timeUntilCollSpawn2 = collSpawnInterval2;
 
     StateStack& m_stateStack;
     std::unique_ptr<Player> m_pPlayer;

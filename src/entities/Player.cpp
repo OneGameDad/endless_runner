@@ -33,25 +33,51 @@ bool Player::init()
 void Player::update(float dt)
 {
     recharge(dt);
+   
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && m_position.y > 790)
     {
         jump();
     }
-
-//    float ySpeed = 0.0f;
-
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && m_position.y < 790)
+    {
+        drop();
+    }
+/*    if (m_position.y > 790)
+        onGround = true;
+*/
     if (m_position.y < 650)
         m_isJumping = false;
 
-/**    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && m_position.y < 790)
-        m_position.y += 400 * dt;
-    else*/ if (m_isJumping)
+    if (m_isJumping)
         m_position.y -= 200 * dt;
     else if (!m_isJumping && m_position.y < 800)
         m_position.y += 200 * dt;
-
-
-    
+/*
+    float ySpeed = 0.0f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && m_position.y > 790)
+    {
+        jump();
+    }
+    if (m_position.y >= 800.0f)
+    {
+        ySpeed = 0.0f;
+        m_isJumping = false;
+    }
+    else
+    {
+        ySpeed += gravity * dt;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && m_position.y < 790)
+        {
+            ySpeed += dropBoost * dt;
+        }
+    }
+    if (m_isJumping)
+    {
+        ySpeed = maxYSpeed;
+    }
+    m_position.y += ySpeed;
+    std::cout << "Player Y Pos: " <<  m_position.y << std::endl;
+*/
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::G))
     {
         fire();
@@ -71,8 +97,10 @@ void Player::reset()
     currentHealth = maxHealth;
     fireRate = defaultPlayerFireRate;
     jumpRate = defaultPlayerJumpRate;
+    damageRate = defaultPlayerDamageRate;
     canFire = true;
     canJump = true;
+    canTakeDamage = true;
 }
 
 void Player::setIsDead()
@@ -83,16 +111,21 @@ void Player::setIsDead()
 
 void    Player::takeDamage(float num)
 {
-    if (num < 0.0f)
-        return;
-    currentHealth -= num;
-    if (currentHealth <= 0.0f)
-        setIsDead();
+    if (num <= 0.0f)
+            return;
+    if (canTakeDamage)
+    {
+        currentHealth -= num;
+        if (currentHealth <= 0.0f)
+            setIsDead();
+        canTakeDamage = false;
+    }
+    
 }
 
 void    Player::heal(float num)
 {
-    if (num < 0.0f)
+    if (num <= 0.0f)
         return;
     if ((currentHealth + num) < maxHealth)
         currentHealth += num;
@@ -102,7 +135,7 @@ void    Player::heal(float num)
 
 void    Player::energize(float num)
 {
-    if (num < 0.0f)
+    if (num <= 0.0f)
         return;
     if ((currentEnergy + num) < maxEnergy)
         currentEnergy += num;    
@@ -113,12 +146,16 @@ void    Player::energize(float num)
 
 void    Player::drain(float num)
 {
-    if (num < 0.0f)
-        return;
-    if ((currentEnergy - num) >= 0.0f)
-        currentEnergy = 0.0f;
-    else
-        currentEnergy -= num;
+    if (num <= 0.0f)
+            return;
+    if (canBeDrained)
+    {
+        if ((currentEnergy - num) <= 0.0f)
+            currentEnergy = 0.0f;
+        else
+            currentEnergy -= num;
+        canBeDrained = false;
+    }
 }
 
 float   Player::getNormalizedEnergy() const
@@ -164,6 +201,24 @@ void    Player::recharge(float deltaTime)
             jumpRate = defaultPlayerJumpRate;
         }
     }
+    if (!canTakeDamage)
+    {
+        damageRate -= deltaTime;
+        if (damageRate <= 0.0f)
+        {
+            canTakeDamage = true;
+            damageRate = defaultPlayerDamageRate;
+        }
+    }
+    if (!canBeDrained)
+    {
+        drainRate -= deltaTime;
+        if (drainRate <= 0.0f)
+        {
+            canBeDrained = true;
+            drainRate = defaultPlayerDamageRate;
+        }
+    }
 }
 
 void    Player::jump()
@@ -172,5 +227,13 @@ void    Player::jump()
     {
         canJump = false;
         m_isJumping = true;
+    }
+}
+
+void    Player::drop()
+{
+    if (m_isJumping)
+    {
+        m_isJumping = false;
     }
 }

@@ -31,6 +31,16 @@ private:
     bool canJump = true;
     float jumpRate = defaultPlayerJumpRate;
 
+    const float gravity = 150.0f;
+    const float maxYSpeed = -30.0f;
+    const float dropBoost = 8.0f;
+
+    bool canTakeDamage = true;
+    float damageRate = defaultPlayerDamageRate;
+
+    bool canBeDrained = true;
+    float drainRate = defaultPlayerDamageRate;
+
     ProjectilesManager* projManager;
     void    reset();
     void    fire();
