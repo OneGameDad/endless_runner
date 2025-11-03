@@ -65,7 +65,18 @@ Upload your work to Google Drive, Dropbox (or some other service), and complete 
 
 ## Your Game's Instructions
 
-This game includes tools I developed in preparation for this challenge. They can be found on my [SFML Experiments Repo](https://github.com/OneGameDad/SFML_Experiments).
+This game includes tools I developed in preparation for this challenge. They can be found on my [SFML Experiments Repo](https://github.com/OneGameDad/SFML_Experiments). Namely the pooling systems.
+
+Controls: 
+- Press SPACE to jump.
+- Press DOWN ARROW to drop faster.
+- Press G to shoot, if you have no energy you cannot shoot.
+
+Collect the Yellow Energy Orbs to gain energy to shoot.
+
+If you are hit by the Black Enemies you will lose energy.
+
+If you are hit by the Red Enemies you will lose health.
 
 ## Troubleshooting
 
