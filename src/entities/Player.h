@@ -24,6 +24,7 @@ private:
     bool isDead = true;
     bool wasSpacePressed = false;
 
+    const float fireCost = 1.0f;
     bool canFire = true;
     float fireRate = defaultPlayerFireRate;
     sf::Vector2f spawnPoint;

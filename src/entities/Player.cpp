@@ -141,7 +141,6 @@ void    Player::energize(float num)
         currentEnergy += num;    
     else
         currentEnergy = maxEnergy;
-    std::cout << "Current Energy: " << getCurrentEnergy() << std::endl;
 }
 
 void    Player::drain(float num)
@@ -172,12 +171,15 @@ float   Player::getNormalizedHealth() const
 
 void    Player::fire()
 {
-    if (canFire && currentEnergy > 0.0f)
+    if (canFire && currentEnergy > fireCost)
     {
         spawnPoint = {getPosition().x + 10, getPosition().y};
         projManager->spawn(spawnPoint, defaultProjectileLifetime, defaultProjectileSpeed);
         canFire = false;
-        currentEnergy -= 3.0f;
+        if (currentEnergy - fireCost >= 0.0)
+            currentEnergy -= fireCost;
+        else
+            currentEnergy = 0.0f;
     }
 }
 

@@ -58,4 +58,7 @@ private:
     const std::string healthStr = "Player Health: ";
     std::unique_ptr<sf::Text> playerEnergyNotification;
     const std::string energyStr = "Player Energy: ";
+
+    bool spawnHealthCollectible = false;
+    void setSpawnHealthCollectible();
 };
